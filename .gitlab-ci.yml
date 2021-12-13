@@ -1,11 +1,3 @@
-# Node Image for docker on which code will execute
-image: ubuntu
-
-# This is the stages / task to perfom in jobs
-stages:
-  - deploy
-
-# Job Two for deploy build to server
 deploy_master:
   stage: deploy
   before_script:
@@ -19,5 +11,5 @@ deploy_master:
     - apt-get -y install rsync
   script:
     - ssh -i $PRIVATE_KEY ubuntu@$SERVER_IP
-    - rsync -zvhr -auv -e "ssh -i $PRIVATE_KEY" * ubuntu@$SERVER_IP:/home/ubuntu/test/
-  only: ['master']
+    - cd /home/ubuntu/test && touch test.txt
+  only: ['master'] 
