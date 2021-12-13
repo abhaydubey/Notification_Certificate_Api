@@ -1,0 +1,50 @@
+{
+  "development": {
+    "username": "postgres",
+    "password": "wdwijewhwg3i4y989393",
+    "database": "kaksha",
+    "host": "unikaksha-db.c1nm7t6matkm.ap-south-1.rds.amazonaws.com",
+    "dialect": "postgres",
+    "PORT": 4001,
+    "timezone": "+05:30",
+    "ZOOM": "JOoZ7TxaSPmTcoBQ6syBXA",
+    "BBB": "https://dev.bigblue.kaksha.education/bigbluebutton/api/",
+    "BBB_URL": "https://dev.bigblue.kaksha.education",
+    "BBB_SECRET": "N4454KACmDBn0DdrBqK84BuowTNcHfrzTYr7o8U",
+    "URL": "dev.unikaksha.dev",
+    "AWS_REGION": "ap-south-1",
+    "sertifier": "690ec5c1593147d9bc092d88a6571e57821bd37aedb2469c832f57b68878974060f49e8d903b47dc9583e9492de6648c8daf6c324d304c1c8bf67691a44e5f32"
+  },
+  "test": {
+    "username": "postgres",
+    "password": "deastage!2kaksha",
+    "database": "kaksha",
+    "host": "unikaksha-db-stage.c1nm7t6matkm.ap-south-1.rds.amazonaws.com",
+    "dialect": "postgres",
+    "PORT": 4001,
+    "timezone": "+05:30",
+    "ZOOM": "JOoZ7TxaSPmTcoBQ6syBXA",
+    "BBB": "https://stage.bigblue.kaksha.education/bigbluebutton/api/",
+    "BBB_URL": "https://stage.bigblue.kaksha.education",
+    "BBB_SECRET": "IT20GDElJT5qxNTOZgl5IdY8bGYpoyPS1bjjmwqzc",
+    "AWS_REGION": "ap-south-1",
+    "URL": "api.staging.unikaksha.dev",
+    "sertifier": "690ec5c1593147d9bc092d88a6571e57821bd37aedb2469c832f57b68878974060f49e8d903b47dc9583e9492de6648c8daf6c324d304c1c8bf67691a44e5f32"
+  },
+  "production": {
+    "username": "postgres",
+    "password": "wdwijewhwg3i4y989393",
+    "database": "kaksha",
+    "host": "unikaksha-db.c1nm7t6matkm.ap-south-1.rds.amazonaws.com",
+    "dialect": "postgres",
+    "PORT": 4001,
+    "timezone": "+05:30",
+    "ZOOM": "JOoZ7TxaSPmTcoBQ6syBXA",
+    "BBB": "https://bigblue.kaksha.education/bigbluebutton/api/",
+    "BBB_URL": "https://bigblue.kaksha.education",
+    "BBB_SECRET": "O97Q7hNqxzCwTcsFLo8XStbXuDlPwVBYrdr1j6F1cNI",
+    "AWS_REGION": "ap-south-1",
+    "URL": "api.unikaksha.com",
+    "sertifier": "690ec5c1593147d9bc092d88a6571e57821bd37aedb2469c832f57b68878974060f49e8d903b47dc9583e9492de6648c8daf6c324d304c1c8bf67691a44e5f32"
+  }
+}
