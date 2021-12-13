@@ -1,18 +1,13 @@
-##
-image: alpine
-
-stages:
-  - deployment
-
-deploy:
-  stage: deployment
-  before_script:
-      - apk add openssh-client
-      - eval $(ssh-agent -s)
-      - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-      - mkdir -p ~/.ssh
-      - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
-  script:
-    - ssh ubuntu@$SERVER_IP "cd /home/ubuntu/test && touch test.txt"
+notification_job:
+  stage: deploy
   only:
-    - master 
+    - master
+
+  before_script:
+    - mkdir -p ~/.ssh
+    - echo -e "$PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n\" > ~/.ssh/config'
+
+  script:
+    - ssh -i $PRIVATE_KEY ubuntu@65.0.224.185 && touch /home/ubuntu/test/test.txt 
