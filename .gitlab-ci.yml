@@ -1,15 +1,17 @@
-deploy_master:
-  stage: deploy
+image: alpine
+
+stages:
+  - deployment
+
+deploy:
+  stage: deployment
   before_script:
-    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
-    - eval $(ssh-agent -s)
-    - mkdir -p ~/.ssh
-    - chmod 700 ~/.ssh
-    - chmod 400 $PRIVATE_KEY
-    - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
-    - apt-get update -y
-    - apt-get -y install rsync
+      - apk add openssh-client
+      - eval $(ssh-agent -s)
+      - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+      - mkdir -p ~/.ssh
+      - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
   script:
-    - ssh -i $PRIVATE_KEY ubuntu@$SERVER_IP
-    - cd /home/ubuntu/test && touch test.txt
-  only: ['master'] 
+    - ssh ubuntu@$SERVER_IP "cd /home/ubuntu/test && touch test.txt"
+  only:
+    - master 
