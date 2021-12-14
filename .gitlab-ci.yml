@@ -1,11 +1,14 @@
 stages:
  - test
  - deploy
-deploy_test:
- stage: deploy
- script:
- - cd /opt/manual
- - sudo git stash
- - sudo git pull origin master
+test:
+ stage: test
+ script: echo "Running tests"
+#deploy_test:
+# stage: deploy
+# script:
+# - cd /opt/manual
+# - sudo git stash
+# - sudo git pull origin master
  only:
  - master 
