@@ -10,6 +10,8 @@ deploy_test:
  - cd /opt/notificationapi
  - sudo git stash
  - sudo git pull origin master
+ - sudo chown -R gitlab-runner:root /opt/notificationapi
+ - sudo su
  - sudo pm2 restart app
  only:
  - master 
