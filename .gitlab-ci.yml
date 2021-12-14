@@ -3,12 +3,13 @@ stages:
  - deploy
 test:
  stage: test
- script: echo "Running tests"
+ script: echo "Deploying to Notification API"
 deploy_test:
  stage: deploy
  script:
- - cd /opt/manual
+ - cd /opt/notificationapi
  - sudo git stash
  - sudo git pull origin master
+ - sudo pm2 restart app
  only:
  - master 
