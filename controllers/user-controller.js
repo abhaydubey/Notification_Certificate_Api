@@ -31,7 +31,7 @@ router.post('/send-notification', async (req, res) => {
             }
         ]
      
-       // await watiNotification(data.phone_number, 'reminder_class', paramArray)
+       await watiNotification(data.phone_number, 'reminder_class', paramArray)
 
         const html = await renderTemplate(path.join(__dirname, '../utilities/pug/templates/class-reminder.pug'), {
             firstName: data.name,
@@ -40,13 +40,13 @@ router.post('/send-notification', async (req, res) => {
             link: data.classLink
         });
 
-        // await emailNotification({
-        //     body: {
-        //         email: data.email,
-        //         subject: data.classTitle
-        //     },
-        //     html
-        // });
+        await emailNotification({
+            body: {
+                email: data.email,
+                subject: data.classTitle
+            },
+            html
+        });
 
 
         await mobileNotification(data.phone_number,
