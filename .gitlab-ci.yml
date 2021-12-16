@@ -1,0 +1,15 @@
+stages:
+ - test
+ - deploy
+pre-deploy:
+ stage: test
+ script: echo "Deploying to Notification API"
+deploy:
+ stage: deploy
+ script:
+ - cd /opt/notificationapi
+ - sudo git stash
+ - sudo git pull origin master
+ - sudo chown -R gitlab-runner:root /opt/notificationapi
+ only:
+ - master 
