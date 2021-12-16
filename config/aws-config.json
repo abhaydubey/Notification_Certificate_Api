@@ -1,0 +1,20 @@
+{
+    "bucket": {
+        "accessKeyId": "AKIARNRIZNHRAOUUIE64",
+        "secretAccessKey": "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",
+        "region": "ap-south-1",
+        "bucket": "kaksha-docs"
+    },
+    "cognito": {
+        "userPoolId": "ap-south-1_a0Jr3zlLF",
+        "clientId": "3lb6kh377nc1cfnmf7qqk7gps7",
+        "IdentityPoolId": "ap-south-1:4a78d2f0-f76b-4e2e-a3a2-88e80b955ed4",
+        "region": "ap-south-1",
+        "cognitoUrl": "https://unikaksha-stage.auth.ap-south-1.amazoncognito.com"
+    },
+    "twilio": {
+        "TWILIO_ACCOUNT_SID": "AC685f0fc1edf95b2b7b9fec547b825423",
+        "TWILIO_AUTH_TOKEN": "e553afcdd2ee4e0086e844d224072685",
+        "TWILIO_EMAIL": "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"
+    }
+}
