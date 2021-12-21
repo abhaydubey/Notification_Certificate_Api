@@ -10,6 +10,7 @@ deploy:
  - cd /opt/devapi
  - sudo git stash
  - sudo git pull origin development
+ - sudo npm install
  - sudo chown -R gitlab-runner:root /opt/devapi
  only:
  - development
