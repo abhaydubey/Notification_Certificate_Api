@@ -5,7 +5,7 @@
     "database": "kaksha",
     "host": "unikaksha-db.c1nm7t6matkm.ap-south-1.rds.amazonaws.com",
     "dialect": "postgres",
-    "PORT": 4001,
+    "PORT": 4002,
     "timezone": "+05:30",
     "ZOOM": "JOoZ7TxaSPmTcoBQ6syBXA",
     "BBB": "https://dev.bigblue.kaksha.education/bigbluebutton/api/",
