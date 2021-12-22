@@ -8,7 +8,7 @@ const { emailNotification } = require('../utilities/notification/email-notificat
 const { mobileNotification } = require('../utilities/notification/mobile-notification');
 const { createInvoice } = require('../utilities/invoice/createInvoice');
 const InvoiceObj  = require('../validationObj/InvoiceObj');
-
+const notificationObj  = require('../validationObj/notificationObj');
 const validateResourceMW = (resourceSchema) => async (req, res, next) => {
     const resource = req.body;
     try {
@@ -22,57 +22,277 @@ const validateResourceMW = (resourceSchema) => async (req, res, next) => {
 
 
 
-router.post('/send-notification', async (req, res) => {
+router.post('/send-notification',validateResourceMW(notificationObj), async (req, res) => {
     try {
         const  data  = req.body;
-        const paramArray = [
-            {
-                "name": "1",
-                "value": data.name
-            }, {
-                "name": "2",
-                "value": data.classTitle
-            },
-            {
-                "name": "3",
-                "value": data.classStartDateTime
-            },
-            {
-                "name": "4",
-                "value": data.classLink
-            },
-            {
-                "name": "5",
-                "value": '9718106956'
-            }
-        ]
-     
-       await watiNotification(data.phone_number, 'reminder_class', paramArray)
+         const notification_type = ['reminder_class','welcome','enroll_course','payment_failed','payment_sucess']
+         const status = notification_type.includes(data.notification_type);
+         if(!status){
+            return res.status(400).json(BaseResponse.sendError('Notification type should any one of this!.', notification_type));  
+         }
+        switch(data.notification_type) {
 
-        const html = await renderTemplate(path.join(__dirname, '../utilities/pug/templates/class-reminder.pug'), {
-            firstName: data.name,
-            startDate: data.classStartDateTime,
-            time: '',
-            link: data.classLink
-        });
+            case 'reminder_class':
+              
+               // here if IsWhatsapp true 
+              if(data.IsWhatsapp){
+                const paramArray = [
+                    {
+                        "name": "1",
+                        "value": data.name
+                    }, {
+                        "name": "2",
+                        "value": data.classTitle
+                    },
+                    {
+                        "name": "3",
+                        "value": data.classStartDateTime
+                    },
+                    {
+                        "name": "4",
+                        "value": data.classLink
+                    },
+                    {
+                        "name": "5",
+                        "value": '9718106956'
+                    }
+                ]
+                 await watiNotification(data.phone_number, 'reminder_class', paramArray)
+              }
+              // Whatsapp Notification end here
 
-        await emailNotification({
-            body: {
-                email: data.email,
-                subject: data.classTitle
-            },
-            html
-        });
+              // Email notification here
+
+              if(data.IsEmail){
+
+                const html = await renderTemplate(path.join(__dirname, '../utilities/pug/templates/class-reminder.pug'), {
+                    firstName: data.name,
+                    startDate: data.classStartDateTime,
+                    time: '',
+                    link: data.classLink
+                });
+        
+                await emailNotification({
+                    body: {
+                        email: data.email,
+                        subject: data.classTitle
+                    },
+                    html
+                });
+
+              }
+
+              // Email notification end here
+
+              if(data.IsSMS){
+
+                await mobileNotification(data.phone_number,
+                    `Dear ${data.name}
+                     UniKaksha Class Reminder 
+                     Date: ${data.classStartDateTime}
+                     Time: ${data.classStartDateTime}
+                     Link: ${data.classLink}
+                     If you need some last-minute help, call us at : 9718106956`
+                );
+
+              }
+             
+              break;
+
+            case 'welcome':
+               // here if IsWhatsapp true 
+              if(data.IsWhatsapp){
+                const welcomeParams = [
+                    {
+                        "name": "1",
+                        "value": user.name
+                    }, {
+                        "name": "2",
+                        "value": 'support@unikaksha.com'
+                    }
+                ];
+                const whatsapp = await watiNotification(data.phone_number, 'welcome', welcomeParams);
+
+              }
+              // Whatsapp Notification end here
+
+              // Email notification here
+
+              if(data.IsEmail){
+
+                const html = await renderTemplate(path.join(__dirname, '../utilities/pug/templates/welcome.pug'), {
+                    name: data.name
+                });
 
 
-        await mobileNotification(data.phone_number,
-            `Dear ${data.name}
-             UniKaksha Class Reminder 
-             Date: ${data.classStartDateTime}
-             Time: ${data.classStartDateTime}
-             Link: ${data.classLink}
-             If you need some last-minute help, call us at : 9718106956`
-        );
+                const emailService = await emailNotification({
+                    body: {
+                        email: data.email,
+                        subject: 'Confirmation'
+                    },
+                    html
+                });
+
+              }
+
+              // Email notification end here
+
+              if(data.IsSMS){
+
+                await mobileNotification(data.phone_number, `
+                Welcome! We are so glad to have you on board. Let’s begin this exciting journey of learning at scale.
+
+                See you soon!
+                Team UniKaksha
+                `);
+
+              }
+              break;
+
+              case 'enroll_course':
+               // here if IsWhatsapp true 
+              if(data.IsWhatsapp){
+                const paramArray = [
+                    {
+                        "name": "1",
+                        "value": data.name
+                    }, {
+                        "name": "2",
+                        "value": data.classTitle
+                    }
+                ]
+
+                await watiNotification(data.phone_number, 'enroll_course', paramArray)
+
+              }
+              // Whatsapp Notification end here
+
+              // Email notification here
+
+              if(data.IsEmail){
+
+                const enrollmentHtml = await renderTemplate(path.join(__dirname, '../utilities/pug/templates/enrolled.pug'), {});
+
+                await emailNotification({
+                    body: {
+                        email: data.email,
+                        subject: 'Enrollment'
+                    },
+                    html: enrollmentHtml
+                });
+
+              }
+
+              // Email notification end here
+
+              if(data.IsSMS){
+
+                await mobileNotification(data.phone_number, `
+                    Welcome ${data.name} ! You have been successfully enrolled in ${data.classTitle}. We are thrilled to be partnering with you as you participate in an exciting journey of upskilling and redefining yourself.
+                    Best Wishes,
+                    Team UniKaksha
+                    `);
+
+              }
+              break;
+
+              case 'payment_failed':
+                // here if IsWhatsapp true 
+               if(data.IsWhatsapp){
+                const params = [
+                    {
+                        "name": "1",
+                        "value": data.name
+                    }
+                ];
+                await watiNotification(data.phone_number, 'payment_failed', params);
+              }
+               // Whatsapp Notification end here
+ 
+               // Email notification here
+ 
+               if(data.IsEmail){
+ 
+                const paymentHtml = await renderTemplate(path.join(__dirname, '../utilities/pug/templates/payment-failed.pug'), {
+                    name: data.name
+                });
+    
+                await emailNotification({
+                    body: {
+                        email: data.email,
+                        subject: 'Payment'
+                    },
+                    html: paymentHtml
+                });
+ 
+               }
+ 
+               // Email notification end here
+ 
+               if(data.IsSMS){
+ 
+                await mobileNotification(data.phone_number,
+                    `Dear ${data.name},Unfortunately, we have not received your payment. Please try again after some time.
+                Best Wishes,
+                Team UniKaksha
+                `);
+ 
+               }
+               break;
+
+               case 'payment_sucess':
+                // here if IsWhatsapp true 
+               if(data.IsWhatsapp){
+                const paymentParams = [
+                    {
+                        "name": "1",
+                        "value": data.name
+                    }, {
+                        "name": "2",
+                        "value": data.actualDeductAmount
+                    }
+                ];
+                await watiNotification(data.phone_number, 'payment_sucess', paymentParams);
+
+              }
+               // Whatsapp Notification end here
+ 
+               // Email notification here
+ 
+               if(data.IsEmail){
+ 
+                const paymentHtml = await renderTemplate(path.join(__dirname, '../utilities/pug/templates/payment-done.pug'), {
+                    name: data.name,
+                    amount: data.actualDeductAmount,
+                    contact: "9718106956"
+                });
+
+                await emailNotification({
+                    body: {
+                        email: data.email,
+                        subject: 'Payment'
+                    },
+                    html: paymentHtml
+                });
+ 
+               }
+ 
+               // Email notification end here
+ 
+               if(data.IsSMS){
+ 
+                await mobileNotification(data.phone_number, `
+                        Dear ${data.name}, Payment successful!  We have received your payment of Rs ${actualDeductAmount}. For any help reach out to us at ${config.dataValues.contactNumber}.
+                        Best Wishes,
+                        Team UniKaksha
+                        `);
+ 
+               }
+               break;
+
+            default:
+              // code block
+          }
 
         return res.status(200).json(BaseResponse.sendSuccess('Notification sent.'));
 
