@@ -3,13 +3,15 @@ stages:
  - deploy
 pre-deploy:
  stage: test
- script: echo "Deploying to Notification API"
+ script: echo "Deploying to Dev Notification API"
 deploy:
  stage: deploy
  script:
- - cd /opt/notificationapi
+ - cd /opt/devapi
  - sudo git stash
- - sudo git pull origin master
- - sudo chown -R gitlab-runner:root /opt/notificationapi
+ - sudo git pull origin development
+ - npm install
+ - sudo chown -R gitlab-runner:root /opt/devapi
+ - pm2 restart devapi
  only:
- - master 
+ - development
