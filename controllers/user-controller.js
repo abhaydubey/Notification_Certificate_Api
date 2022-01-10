@@ -2,13 +2,15 @@ const express = require('express');
 const router = express.Router();
 const path = require('path');
 const BaseResponse = require('../utilities/response');
-const { watiNotification } = require('../utilities/notification/wati-notification');
 const renderTemplate = require('../utilities/pug/pug');
+const { watiNotification } = require('../utilities/notification/wati-notification');
 const { emailNotification } = require('../utilities/notification/email-notification');
 const { mobileNotification } = require('../utilities/notification/mobile-notification');
+
 const { createInvoice } = require('../utilities/invoice/createInvoice');
 const InvoiceObj  = require('../validationObj/InvoiceObj');
 const notificationObj  = require('../validationObj/notificationObj');
+var axios = require('axios');
 const validateResourceMW = (resourceSchema) => async (req, res, next) => {
     const resource = req.body;
     try {
@@ -32,8 +34,7 @@ router.post('/send-notification',validateResourceMW(notificationObj), async (req
          }
         switch(data.notification_type) {
 
-            case 'reminder_class':
-              
+            case 'reminder_class':              
                // here if IsWhatsapp true 
               if(data.IsWhatsapp){
                 const paramArray = [
@@ -72,7 +73,7 @@ router.post('/send-notification',validateResourceMW(notificationObj), async (req
                     link: data.classLink
                 });
         
-                await emailNotification({
+               await emailNotification({
                     body: {
                         email: data.email,
                         subject: data.classTitle
@@ -80,13 +81,14 @@ router.post('/send-notification',validateResourceMW(notificationObj), async (req
                     html
                 });
 
+
               }
 
               // Email notification end here
 
               if(data.IsSMS){
-
-                await mobileNotification(data.phone_number,
+               
+              await mobileNotification(data.phone_number,
                     `Dear ${data.name}
                      UniKaksha Class Reminder 
                      Date: ${data.classStartDateTime}
@@ -95,7 +97,9 @@ router.post('/send-notification',validateResourceMW(notificationObj), async (req
                      If you need some last-minute help, call us at : 9718106956`
                 );
 
+
               }
+            
              
               break;
 
@@ -114,6 +118,7 @@ router.post('/send-notification',validateResourceMW(notificationObj), async (req
                 const whatsapp = await watiNotification(data.phone_number, 'welcome', welcomeParams);
 
               }
+              
               // Whatsapp Notification end here
 
               // Email notification here
@@ -186,8 +191,9 @@ router.post('/send-notification',validateResourceMW(notificationObj), async (req
               // Email notification end here
 
               if(data.IsSMS){
+                //console.log('aaaaaaaaaa', data)
 
-                await mobileNotification(data.phone_number, `
+             await mobileNotification(data.phone_number, `
                     Welcome ${data.name} ! You have been successfully enrolled in ${data.classTitle}. We are thrilled to be partnering with you as you participate in an exciting journey of upskilling and redefining yourself.
                     Best Wishes,
                     Team UniKaksha
@@ -307,7 +313,9 @@ router.post('/send-notification',validateResourceMW(notificationObj), async (req
 
 
 router.post('/invoice',validateResourceMW(InvoiceObj), async (req, res) => {
+
     try {
+        
         const  data  = req.body;
         const Obj = {
             "billedBy": {
@@ -341,16 +349,58 @@ router.post('/invoice',validateResourceMW(InvoiceObj), async (req, res) => {
                 }
             }
         };
+    
         await createInvoice(Obj);
+        // console.log('111111111',res)
         return res.status(200).json(BaseResponse.sendSuccess('Invoice created.'));
-
 
     } catch (err) {
         console.log('error',err);
         return res.status(400).json(BaseResponse.sendError('Bad request!.', err));
     }
 
-
 });
+
+
+router.post('/create-certificate', async(req, res) => {
+  
+    var data = JSON.stringify({
+     
+      "title": req.body.recipientName,
+      "description": req.body.courseName,
+      "duration": req.body.courseDuration,
+      "expireDate":req.body.completionDate,
+      "durationNumber": req.body.durationNumber,
+      "durationType": req.body.durationType,
+      "cost": req.body.cost,
+      "level": req.body.level,
+      "type": req.body.type
+    
+    });
+
+    var config = {
+      method: 'post',
+      url: 'https://b2b.sertifier.com/Detail/AddDetail',
+      headers: { 
+        'api-version': '2.1', 
+        'secretKey': '690ec5c1593147d9bc092d88a6571e57821bd37aedb2469c832f57b68878974060f49e8d903b47dc9583e9492de6648c8daf6c324d304c1c8bf67691a44e5f32', 
+        'Content-Type': 'application/json'
+      },
+      data : data
+    };
+
+    axios(config)
+        .then(function (response) {
+            if(response.data.hasError){
+                res.status(400).json({message:"validation error",errors: response.data.validationErrors});
+            }else {
+                res.status(200).json({message:"Create successfully",data:response.data});     
+            }
+        })
+       .catch(function (error) {
+            res.status(500).json({error})
+    });
+})
+
 
 module.exports = router;
