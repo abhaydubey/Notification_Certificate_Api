@@ -54,7 +54,6 @@ const emailNotification = async ({
                 return data;
             }).catch(
                 function (err) {
-                    // console.error(err, err.stack);
                     return err
                 }
             );

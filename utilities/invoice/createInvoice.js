@@ -20,8 +20,6 @@ const createInvoice = async (dataObj) => {
     // create invoice
    var datastring = JSON.stringify(dataObj);
 
-   //console.log('auth res',response.data.accessToken)
-
     var configIn = {
       method: 'post',
       url: 'https://api.refrens.com/businesses/code-shastra-pvt-ltd/invoices',

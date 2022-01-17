@@ -23,7 +23,6 @@ const watiNotification = async (toNumber,template, paramArray) => {
       axios(config)
       .then(function (response) {
         return response.data;
-        //console.log(JSON.stringify(response.data));
       })
       .catch(function (error) {
         console.log(error);
