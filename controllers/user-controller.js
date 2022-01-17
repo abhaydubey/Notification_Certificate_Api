@@ -42,7 +42,8 @@ router.post('/send-notification',validateResourceMW(notificationObj), async (req
                     {
                         "name": "1",
                         "value": data.name
-                    }, {
+                    }, 
+                    {
                         "name": "2",
                         "value": data.classTitle
                     },
@@ -69,7 +70,7 @@ router.post('/send-notification',validateResourceMW(notificationObj), async (req
 
                 const html = await renderTemplate(path.join(__dirname, '../utilities/pug/templates/class-reminder.pug'), {
                     firstName: data.name,
-                    startDate: data.classStartDateTime,
+                    //startDate: data.classStartDateTime,
                     time: '',
                     link: data.classLink
                 });
@@ -77,7 +78,7 @@ router.post('/send-notification',validateResourceMW(notificationObj), async (req
                 await emailNotification({
                     body: {
                         email: data.email,
-                        subject: data.classTitle
+                        //subject: data.classTitle
                     },
                     html
                 });
@@ -376,7 +377,7 @@ router.post('/invoice',validateResourceMW(InvoiceObj), async (req, res) => {
 router.post('/create-certificate', async(req, res) => {
   
     var data = JSON.stringify({
-     
+        
       "title": req.body.recipientName,
       "description": req.body.courseName,
       "duration": req.body.courseDuration,
@@ -386,7 +387,7 @@ router.post('/create-certificate', async(req, res) => {
       "cost": req.body.cost,
       "level": req.body.level,
       "type": req.body.type
-    
+
     });
 
     var config = {
