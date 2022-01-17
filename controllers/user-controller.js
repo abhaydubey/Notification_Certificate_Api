@@ -27,8 +27,9 @@ const validateResourceMW = (resourceSchema) => async (req, res, next) => {
 router.post('/send-notification',validateResourceMW(notificationObj), async (req, res) => {
     try {
         const  data  = req.body;
-         const notification_type = ['reminder_class','welcome','enroll_course','payment_failed','payment_sucess']
+         const notification_type = ['reminder_class','welcome','enroll_course','payment_failed','payment_sucess','approve_otp']
          const status = notification_type.includes(data.notification_type);
+
          if(!status){
             return res.status(400).json(BaseResponse.sendError('Notification type should any one of this!.', notification_type));  
          }
@@ -73,7 +74,7 @@ router.post('/send-notification',validateResourceMW(notificationObj), async (req
                     link: data.classLink
                 });
         
-               await emailNotification({
+                await emailNotification({
                     body: {
                         email: data.email,
                         subject: data.classTitle
@@ -81,52 +82,57 @@ router.post('/send-notification',validateResourceMW(notificationObj), async (req
                     html
                 });
 
-
               }
 
               // Email notification end here
 
-              if(data.IsSMS){
-               
-              await mobileNotification(data.phone_number,
-                    `Dear ${data.name}
-                     UniKaksha Class Reminder 
-                     Date: ${data.classStartDateTime}
-                     Time: ${data.classStartDateTime}
-                     Link: ${data.classLink}
-                     If you need some last-minute help, call us at : 9718106956`
-                );
+              //   if(data.IsSMS){
+              //   await mobileNotification(data.phone_number,
+
+              //       `Dear ${data.name}
+              //        UniKaksha Class Reminder 
+              //        Date: ${data.classStartDateTime}
+              //        Time: ${data.classStartDateTime}
+              //        Link: ${data.classLink}
+              //        If you need some last-minute help, call us at : 9718106956`
+              //   )
+              //   }
+
+              // break;
 
 
-              }
-            
-             
-              break;
+                case 'approve_otp':
+                    //console.log(data);
+                    if(data.IsSMS){
+                    await mobileNotification(data.phone_number, `Thank you for registering on Unikaksha, please use ${data.name} as your OTP to complete your registration process. -Unikaksha -Unikaksha`);
+                    }
 
-            case 'welcome':
+                break;
+
+
+                 case 'welcome':
                // here if IsWhatsapp true 
-              if(data.IsWhatsapp){
-                const welcomeParams = [
+                if(data.IsWhatsapp){
+                    const welcomeParams = [
                     {
                         "name": "1",
                         "value": user.name
                     }, {
                         "name": "2",
                         "value": 'support@unikaksha.com'
-                    }
-                ];
+                    }];
                 const whatsapp = await watiNotification(data.phone_number, 'welcome', welcomeParams);
 
-              }
+                }
               
               // Whatsapp Notification end here
 
               // Email notification here
 
-              if(data.IsEmail){
+                if(data.IsEmail){
 
-                const html = await renderTemplate(path.join(__dirname, '../utilities/pug/templates/welcome.pug'), {
-                    name: data.name
+                    const html = await renderTemplate(path.join(__dirname, '../utilities/pug/templates/welcome.pug'), {
+                        name: data.name
                 });
 
 
@@ -143,6 +149,7 @@ router.post('/send-notification',validateResourceMW(notificationObj), async (req
               // Email notification end here
 
               if(data.IsSMS){
+                console.log('a111a11', IsSMS)
 
                 await mobileNotification(data.phone_number, `
                 Welcome! We are so glad to have you on board. Let’s begin this exciting journey of learning at scale.
@@ -191,7 +198,7 @@ router.post('/send-notification',validateResourceMW(notificationObj), async (req
               // Email notification end here
 
               if(data.IsSMS){
-                //console.log('aaaaaaaaaa', data)
+                console.log('aaaaaaaaaa', IsSMS)
 
              await mobileNotification(data.phone_number, `
                     Welcome ${data.name} ! You have been successfully enrolled in ${data.classTitle}. We are thrilled to be partnering with you as you participate in an exciting journey of upskilling and redefining yourself.
@@ -200,6 +207,7 @@ router.post('/send-notification',validateResourceMW(notificationObj), async (req
                     `);
 
               }
+
               break;
 
               case 'payment_failed':
@@ -300,10 +308,13 @@ router.post('/send-notification',validateResourceMW(notificationObj), async (req
               // code block
           }
 
-        return res.status(200).json(BaseResponse.sendSuccess('Notification sent.'));
+
+        return res.status(200).json(BaseResponse.sendSuccess('Notification sent.', data));
 
 
-    } catch (err) {
+    } 
+
+    catch (err) {
         console.log('error',err);
         return res.status(400).json(BaseResponse.sendError('Bad request!.', err));
     }
