@@ -7,21 +7,16 @@ const { watiNotification } = require('../utilities/notification/wati-notificatio
 const { emailNotification } = require('../utilities/notification/email-notification');
 const { mobileNotification } = require('../utilities/notification/mobile-notification');
 
-const { createInvoice } = require('../utilities/invoice/createInvoice');
-const InvoiceObj  = require('../validationObj/InvoiceObj');
 const notificationObj  = require('../validationObj/notificationObj');
-var axios = require('axios');
 const validateResourceMW = (resourceSchema) => async (req, res, next) => {
-    const resource = req.body;
-    try {
-      await resourceSchema.validate(resource,{ abortEarly: false });
-      next();
-    } catch (e) {
-      res.status(400).json({ error: e.errors.join(', ') });
-    }
-  };
-
-
+  const resource = req.body;
+  try {
+    await resourceSchema.validate(resource,{ abortEarly: false });
+    next();
+  } catch (e) {
+    res.status(400).json({ error: e.errors.join(', ') });
+  }
+};
 
 router.post('/send-notification',validateResourceMW(notificationObj), async (req, res) => {
   try {
@@ -285,89 +280,5 @@ router.post('/send-notification',validateResourceMW(notificationObj), async (req
     return res.status(400).json(BaseResponse.sendError('Bad request!.', err));
   }
 });
-
-
-router.post('/invoice',validateResourceMW(InvoiceObj), async (req, res) => {
-  try {  
-    const  data  = req.body;
-    const Obj = {
-      "billedBy": {
-        "name": "Code Shastra Pvt Ltd",
-        "street": "D-144, Ground Floor, Sushant Lok - 3, Sector - 57, Gurgaon Haryana",
-        "city": "Gurgaon",
-        "pincode": "122003",
-        "gstState": "24",
-        "country": "IN"
-      },
-      "billedTo": {
-        "name": data.user_name,
-        "street": data.street,
-        "city": data.city,
-        "pincode": data.pincode,
-        "gstState": data.gstState,
-        "country": data.country_code
-      },
-      "items": [
-        {
-          "rate": Number.parseInt(data.amount),
-          "quantity": data.quantity,
-          "gstRate": Number.parseInt(data.gstAmount),
-          "name": data.item_name
-        }
-      ],
-      "email": {
-        "to": {
-          "name": data.user_name,
-          "email": data.email
-        }
-      }
-    };
-
-    await createInvoice(Obj);
-    return res.status(200).json(BaseResponse.sendSuccess('Invoice created.'));
-
-  } catch (err) {
-    return res.status(400).json(BaseResponse.sendError('Bad request!.', err));
-  }
-});
-
-
-router.post('/create-certificate', async(req, res) => {
-  
-  var data = JSON.stringify({  
-    "title": req.body.recipientName,
-    "description": req.body.courseName,
-    "duration": req.body.courseDuration,
-    "expireDate":req.body.completionDate,
-    "durationNumber": req.body.durationNumber,
-    "durationType": req.body.durationType,
-    "cost": req.body.cost,
-    "level": req.body.level,
-    "type": req.body.type
-  });
-
-  var config = {
-    method: 'post',
-    url: 'https://b2b.sertifier.com/Detail/AddDetail',
-    headers: { 
-      'api-version': '2.1', 
-      'secretKey': '690ec5c1593147d9bc092d88a6571e57821bd37aedb2469c832f57b68878974060f49e8d903b47dc9583e9492de6648c8daf6c324d304c1c8bf67691a44e5f32', 
-      'Content-Type': 'application/json'
-    },
-    data : data
-  };
-
-  axios(config)
-    .then(function (response) {
-      if(response.data.hasError){
-        res.status(400).json({message:"validation error",errors: response.data.validationErrors});
-      } else {
-        res.status(200).json({message:"Create successfully",data:response.data});     
-      }
-    })
-    .catch(function (error) {
-      res.status(500).json({error})
-  });
-})
 
 module.exports = router;
