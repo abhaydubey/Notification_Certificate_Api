@@ -42,10 +42,9 @@ const mobileNotification = async (toNumber, message, notification_type) => {
 
   return sns.publish(params).promise()
     .then(message => {
-      console.log('test success', message)
+      return message;
     })
     .catch(err => {
-      console.log("Error "+err)
       return err;
     });
 };

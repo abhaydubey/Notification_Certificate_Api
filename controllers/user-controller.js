@@ -46,7 +46,7 @@ router.post('/send-notification',validateResourceMW(notificationObj), async (req
             },
             {
               "name": "3",
-              "value": data.classStartDate
+              "value": data.classStartTime
             },
             {
               "name": "4",
@@ -74,6 +74,7 @@ router.post('/send-notification',validateResourceMW(notificationObj), async (req
           await emailNotification({
             body: {
               email: data.email,
+              subject: 'Class Reminder'
             },
             html
           });
@@ -193,6 +194,9 @@ router.post('/send-notification',validateResourceMW(notificationObj), async (req
             {
               "name": "1",
               "value": data.name
+            }, {
+              "name": "2",
+              "value": 'support@unikaksha.com'
             }
           ];
           await watiNotification(data.phone_number, 'payment_failed', params);
@@ -234,10 +238,10 @@ router.post('/send-notification',validateResourceMW(notificationObj), async (req
               "value": data.name
             }, {
               "name": "2",
-              "value": data.actualDeductAmount
+              "value": data.amount
             }
           ];
-          await watiNotification(data.phone_number, 'payment_success', paymentParams);
+          await watiNotification(data.phone_number, 'payment_sucess', paymentParams);
 
         }
         // Whatsapp Notification end here
