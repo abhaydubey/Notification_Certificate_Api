@@ -17,7 +17,7 @@ const createInvoice = async (dataObj) => {
   };
   axios(config)
   .then(function (response) {
-    // create invoice
+    // create invoices
    var datastring = JSON.stringify(dataObj);
 
     var configIn = {
