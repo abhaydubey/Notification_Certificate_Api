@@ -11,6 +11,7 @@
   "author": "Raj kumat",
   "license": "ISC",
   "dependencies": {
+    "@nestjs/axios": "^0.0.5",
     "aws-sdk": "^2.1046.0",
     "axios": "^0.24.0",
     "body-parser": "^1.19.0",
