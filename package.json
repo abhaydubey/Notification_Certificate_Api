@@ -25,5 +25,14 @@
     "pug": "^3.0.2",
     "sequelize": "^6.12.0-beta.2",
     "yup": "^0.32.11"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.com/code-shastra/unikaksha/notification.git"
+  },
+  "bugs": {
+    "url": "https://gitlab.com/code-shastra/unikaksha/notification/issues"
+  },
+  "homepage": "https://gitlab.com/code-shastra/unikaksha/notification#readme"
 }
